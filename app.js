@@ -348,39 +348,65 @@ const UI = {
             const monthReturn = fund.monthReturn;
 
             const suggestionData = PositionReasons.getSuggestion(deviation, fund.dayChange, weekChange, monthReturn);
-            const reasonsData = PositionReasons.getReason(fund, deviation, fund.dayChange, weekChange, monthReturn);
             const fee = (fund.managementFee + fund.custodialFee).toFixed(1);
 
             return `
-                <tr class="fade-in" style="animation-delay: ${index * 0.05}s">
-                    <td>
-                        <div class="fund-name">
-                            ${fund.name}
-                            <span class="code">${fund.code} · ${fundTypeMap[fund.type]}</span>
+                <div class="valuation-card fade-in" style="animation-delay: ${index * 0.05}s">
+                    <div class="valuation-card-header">
+                        <div class="valuation-card-name">
+                            <div>${fund.name}</div>
+                            <div class="valuation-card-code">${fund.code} · ${fundTypeMap[fund.type]}</div>
                         </div>
-                    </td>
-                    <td class="valuation-cell font-bold">${fund.netValue.toFixed(4)}</td>
-                    <td class="valuation-cell font-bold">${fund.estimatedValue.toFixed(4)}</td>
-                    <td class="${estimateChange >= 0 ? 'positive-text' : 'negative-text'}">
-                        ${estimateChange >= 0 ? '+' : ''}${estimateChange.toFixed(2)}%
-                    </td>
-                    <td><span class="deviation ${deviation >= 0 ? 'up' : 'down'}">${deviation >= 0 ? '↑' : '↓'}${Math.abs(deviation).toFixed(2)}%</span></td>
-                    <td class="${fund.dayChange >= 0 ? 'positive-text' : 'negative-text'}">${fund.dayChange >= 0 ? '+' : ''}${fund.dayChange.toFixed(2)}%</td>
-                    <td class="${weekChange >= 0 ? 'positive-text' : 'negative-text'}">${weekChange >= 0 ? '+' : ''}${weekChange.toFixed(2)}%</td>
-                    <td class="${monthReturn >= 0 ? 'positive-text' : 'negative-text'}">${monthReturn >= 0 ? '+' : ''}${monthReturn.toFixed(2)}%</td>
-                    <td><span class="fee-badge">${fee}%</span></td>
-                    <td style="min-width: 160px; text-align: left; padding: 8px;">
-                        <span class="suggestion ${suggestionData.className}" style="display: inline-block; margin-bottom: 4px; font-size: 12px;">${suggestionData.action}</span>
-                        <div class="suggestion-reason" title="${reasonsData.fullReasons}" style="font-size: 11px; cursor: help;">${reasonsData.reasons[0] || '持有观望'}</div>
-                        <div class="action-hint" style="font-size: 10px; margin-top: 2px;">${suggestionData.actionDesc}</div>
-                    </td>
-                    <td>
-                        <div class="action-btns">
+                        <div class="valuation-card-value">
+                            <div class="nav">${fund.netValue.toFixed(4)}</div>
+                            <div class="est">估算 ${fund.estimatedValue.toFixed(4)}</div>
+                        </div>
+                    </div>
+                    <div class="valuation-card-grid">
+                        <div class="valuation-card-item">
+                            <div class="label">估算涨跌</div>
+                            <div class="value ${estimateChange >= 0 ? 'positive' : 'negative'}">${estimateChange >= 0 ? '+' : ''}${estimateChange.toFixed(2)}%</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">偏离度</div>
+                            <div class="value ${deviation >= 0 ? 'negative' : 'positive'}">${deviation >= 0 ? '+' : ''}${deviation.toFixed(2)}%</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">日涨跌</div>
+                            <div class="value ${fund.dayChange >= 0 ? 'positive' : 'negative'}">${fund.dayChange >= 0 ? '+' : ''}${fund.dayChange.toFixed(2)}%</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">周涨跌</div>
+                            <div class="value ${weekChange >= 0 ? 'positive' : 'negative'}">${weekChange >= 0 ? '+' : ''}${weekChange.toFixed(2)}%</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">近1月</div>
+                            <div class="value ${monthReturn >= 0 ? 'positive' : 'negative'}">${monthReturn >= 0 ? '+' : ''}${monthReturn.toFixed(2)}%</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">年收益</div>
+                            <div class="value ${fund.yearReturn >= 0 ? 'positive' : 'negative'}">${fund.yearReturn >= 0 ? '+' : ''}${fund.yearReturn.toFixed(2)}%</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">规模</div>
+                            <div class="value">${fund.scale}亿</div>
+                        </div>
+                        <div class="valuation-card-item">
+                            <div class="label">手续费</div>
+                            <div class="value">${fee}%</div>
+                        </div>
+                    </div>
+                    <div class="valuation-card-footer">
+                        <div class="valuation-card-suggestion">
+                            <span class="suggestion ${suggestionData.className}">${suggestionData.action}</span>
+                            <span class="action-hint" style="margin-left: 8px;">${suggestionData.actionDesc}</span>
+                        </div>
+                        <div class="valuation-card-action">
                             <button class="action-btn" title="详情" onclick="UI.showFundDetail('${fund.code}')"><i class="fas fa-chart-bar"></i></button>
                             <button class="action-btn delete" title="删除" onclick="UI.confirmRemove('${fund.code}', '${fund.name}')"><i class="fas fa-trash-alt"></i></button>
                         </div>
-                    </td>
-                </tr>
+                    </div>
+                </div>
             `;
         }).join('');
     },
