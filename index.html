@@ -325,6 +325,38 @@
         </div>
     </div>
 
+    <!-- 基金详情弹窗 -->
+    <div class="modal" id="fundDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>基金详情</h3>
+                <button class="close-btn" id="closeFundDetail">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="fund-detail-header">
+                    <h4 id="detailName">--</h4>
+                    <span class="code-tag" id="detailCode">--</span>
+                    <span class="type-tag" id="detailType">--</span>
+                </div>
+                <p class="fund-description" id="detailDesc">--</p>
+                <div class="fund-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">当前净值</span>
+                        <span class="stat-value" id="detailNetValue">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">基金规模</span>
+                        <span class="stat-value" id="detailScale">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">费率合计</span>
+                        <span class="stat-value" id="detailFee">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast提示 -->
     <div class="toast-container" id="toastContainer"></div>
 
