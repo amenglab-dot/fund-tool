@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基金智投Pro - 智能投资助手</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>基金智投Pro</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn-icon" id="refreshData">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主要内容区 -->
+        <main class="main-content">
+            <!-- 搜索区 -->
+            <section class="search-section">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="fundSearch" placeholder="搜索基金代码或名称...">
+                    <button class="search-btn" id="searchBtn">搜索</button>
+                </div>
+                <div class="quick-filters">
+                    <button class="filter-chip active" data-filter="all">全部</button>
+                    <button class="filter-chip" data-filter="stock">股票型</button>
+                    <button class="filter-chip" data-filter="bond">债券型</button>
+                    <button class="filter-chip" data-filter="mix">混合型</button>
+                    <button class="filter-chip" data-filter="index">指数型</button>
+                    <button class="filter-chip" data-filter="focus">重点关注</button>
+                </div>
+            </section>
+
+            <!-- 今日操作建议卡片 -->
+            <section class="suggestion-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-lightbulb"></i> 今日操作建议</h3>
+                    <span class="update-time">更新时间: <span id="updateTime">--:--</span></span>
+                </div>
+                <div class="suggestion-content">
+                    <div class="market-status">
+                        <div class="status-item positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>市场偏热</span>
+                        </div>
+                        <div class="risk-level">
+                            <span>风险偏好: </span>
+                            <div class="risk-bar">
+                                <div class="risk-fill" style="width: 65%"></div>
+                            </div>
+                            <span>中等</span>
+                        </div>
+                    </div>
+                    <div class="suggestion-tags">
+                        <span class="tag red">减仓中小盘</span>
+                        <span class="tag green">加仓消费ETF</span>
+                        <span class="tag blue">持有科技基金</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 自选基金估值表 -->
+            <section class="valuation-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-star"></i> 自选基金估值</h3>
+                    <div class="header-actions">
+                        <button class="btn-sm" id="addFundBtn"><i class="fas fa-plus"></i> 添加基金</button>
+                        <button class="btn-sm" id="exportBtn"><i class="fas fa-download"></i> 导出</button>
+                    </div>
+                </div>
+                <div class="valuation-table-container">
+                    <table class="valuation-table" id="valuationTable">
+                        <thead>
+                            <tr>
+                                <th>基金名称</th>
+                                <th>当前净值</th>
+                                <th>估算净值</th>
+                                <th>估算变化</th>
+                                <th>偏离度</th>
+                                <th>日涨跌</th>
+                                <th>周涨跌</th>
+                                <th>近1月</th>
+                                <th>手续费</th>
+                                <th>建议/缘由</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="valuationBody">
+                            <!-- 动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 组合概览 -->
+            <section class="portfolio-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-pie-chart"></i> 投资组合概览</h3>
+                    <button class="btn-sm" id="rebalanceBtn"><i class="fas fa-balance-scale"></i> 再平衡</button>
+                </div>
+                <div class="portfolio-content">
+                    <div class="portfolio-summary">
+                        <div class="summary-item">
+                            <span class="label">总投资</span>
+                            <span class="value" id="totalAsset">¥0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">总收益</span>
+                            <span class="value positive" id="totalProfit">+¥0.00</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">收益率</span>
+                            <span class="value positive" id="totalRate">+0.00%</span>
+                        </div>
+                    </div>
+                    <div class="portfolio-chart">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                    <div class="holdings-list" id="holdingsList">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- 收益走势图 -->
+            <section class="chart-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-chart-area"></i> 收益走势</h3>
+                    <div class="chart-periods">
+                        <button class="period-btn active" data-period="1W">1周</button>
+                        <button class="period-btn" data-period="1M">1月</button>
+                        <button class="period-btn" data-period="3M">3月</button>
+                        <button class="period-btn" data-period="6M">6月</button>
+                        <button class="period-btn" data-period="1Y">1年</button>
+                        <button class="period-btn" data-period="ALL">全部</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </section>
+
+            <!-- 资讯中心 -->
+            <section class="news-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-newspaper"></i> 财经资讯</h3>
+                    <div class="news-tabs">
+                        <button class="tab-btn active" data-tab="all">全部</button>
+                        <button class="tab-btn" data-tab="policy">政策</button>
+                        <button class="tab-btn" data-tab="market">市场</button>
+                        <button class="tab-btn" data-tab="fund">基金</button>
+                    </div>
+                </div>
+                <div class="news-list" id="newsList">
+                    <!-- 动态生成 -->
+                </div>
+            </section>
+
+            <!-- 智能投顾 -->
+            <section class="advisor-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-robot"></i> AI投资顾问</h3>
+                </div>
+                <div class="advisor-content">
+                    <div class="advisor-card">
+                        <div class="advisor-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="advisor-info">
+                            <h4>智能诊断</h4>
+                            <p>您的组合目前偏股型占比过高，建议适当增加债券配置以平衡风险。</p>
+                        </div>
+                    </div>
+                    <div class="advisor-card">
+                        <div class="advisor-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="advisor-info">
+                            <h4>风险提示</h4>
+                            <p>近期市场波动较大，建议关注基金回撤控制能力较强的产品。</p>
+                        </div>
+                    </div>
+                    <div class="advisor-card">
+                        <div class="advisor-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="advisor-info">
+                            <h4>配置建议</h4>
+                            <p>当前估值处于适中区间，适合定投布局。建议保持定投节奏。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 基金筛选器 -->
+            <section class="finder-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-search-plus"></i> 基金筛选器</h3>
+                </div>
+                <div class="finder-content">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>基金类型</label>
+                            <select id="filterType">
+                                <option value="all">全部类型</option>
+                                <option value="stock">股票型</option>
+                                <option value="mix">混合型</option>
+                                <option value="bond">债券型</option>
+                                <option value="index">指数型</option>
+                                <option value="qdii">QDII</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>近1月收益</label>
+                            <select id="filterReturn1M">
+                                <option value="all">不限</option>
+                                <option value="gt0">正收益</option>
+                                <option value="gt5">大于5%</option>
+                                <option value="gt10">大于10%</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>近1年收益</label>
+                            <select id="filterReturn1Y">
+                                <option value="all">不限</option>
+                                <option value="gt10">大于10%</option>
+                                <option value="gt20">大于20%</option>
+                                <option value="gt30">大于30%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label>基金规模</label>
+                            <select id="filterScale">
+                                <option value="all">不限</option>
+                                <option value="small">小于10亿</option>
+                                <option value="medium">10-50亿</option>
+                                <option value="large">大于50亿</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>最大回撤</label>
+                            <select id="filterDrawdown">
+                                <option value="all">不限</option>
+                                <option value="small">小于5%</option>
+                                <option value="medium">5-15%</option>
+                            </select>
+                        </div>
+                        <div class="filter-group search-group">
+                            <button class="btn-primary" id="applyFilter"><i class="fas fa-filter"></i> 应用筛选</button>
+                            <button class="btn-secondary" id="resetFilter"><i class="fas fa-undo"></i> 重置</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 热门基金推荐 -->
+            <section class="recommend-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-fire"></i> 热门基金推荐</h3>
+                    <button class="btn-sm" id="refreshRecommend"><i class="fas fa-sync-alt"></i> 换一换</button>
+                </div>
+                <div class="recommend-list" id="recommendList">
+                    <!-- 动态生成 -->
+                </div>
+            </section>
+        </main>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-page="home">
+                <i class="fas fa-home"></i>
+                <span>首页</span>
+            </button>
+            <button class="nav-item" data-page="portfolio">
+                <i class="fas fa-briefcase"></i>
+                <span>组合</span>
+            </button>
+            <button class="nav-item" data-page="search">
+                <i class="fas fa-search"></i>
+                <span>发现</span>
+            </button>
+            <button class="nav-item" data-page="news">
+                <i class="fas fa-newspaper"></i>
+                <span>资讯</span>
+            </button>
+            <button class="nav-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>我的</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- 添加基金弹窗 -->
+    <div class="modal" id="addFundModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>添加基金</h3>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-input-wrapper">
+                    <input type="text" id="modalSearch" placeholder="输入基金代码或名称搜索">
+                    <button class="btn-primary" id="modalSearchBtn">搜索</button>
+                </div>
+                <div class="search-results" id="searchResults">
+                    <!-- 搜索结果 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
